@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import User from '../models/user.model.ts';
+import User from '../models/user.model.ts";
 import bcrypt from "bcryptjs";
 import jwt, { SignOptions } from "jsonwebtoken";
-import { JWT_SECRET, JWT_EXPIRY } from '../config/env.ts';
+import { JWT_SECRET, JWT_EXPIRY } from '../config/env.ts";
 import { generateError } from "../utilities/common.ts";
 import { NextFunction, Request, Response } from "express";
 import { SignInRequest, SignUpRequest } from "../types/auth.ts";
