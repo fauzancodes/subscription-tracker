@@ -8,6 +8,11 @@ import errorMiddleware from './middlewares/error.middleware.ts';
 import cookieParser from 'cookie-parser';
 import arcjetMiddleware from './middlewares/arcjet.middleware.ts';
 import workflowRouter from './routes/workflow.route.ts';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -18,6 +23,8 @@ app.use(arcjetMiddleware);
 
 const baseRouter = "/api/v1";
 
+app.use(express.static(path.join(__dirname, '../public')));
+
 app.use(`${baseRouter}/auth`, authRouter);
 app.use(`${baseRouter}/users`, userRouter);
 app.use(`${baseRouter}/subscriptions`, subscriptionRouter);
@@ -25,8 +32,8 @@ app.use(`${baseRouter}/workflows`, workflowRouter);
 
 app.use(errorMiddleware);
 
-app.get("/", (req, res) => {
-  res.send('Welcome to The Subscription Tracker API!');
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.listen(PORT, async () => {

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Tracker API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ECECEC;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #006BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        p {
+            line-height: 1.6;
+            color: #333;
+        }
+        em {
+            color: #555;
+        }
+        .feature-list {
+            text-align: left;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 0;
+            list-style-type: disc;
+        }
+        .feature-list li {
+            margin-left: 20px;
+            color: #333;
+        }
+        @media screen and (min-width: 768px) {
+            .feature-list {
+                grid-template-columns: 1fr 1fr 1fr;
+                max-width: 90%;
+            }
+        }
+        .button-group {
+            margin: 30px 0;
+        }
+        a.button {
+            display: inline-block;
+            margin: 10px;
+            padding: 14px 24px;
+            font-size: 16px;
+            text-decoration: none;
+            background: #006BFF;
+            color: white;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        a.button:hover {
+            background: #004bb3;
+        }
+        footer {
+            background-color: #E0E0E0;
+            color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Subscription Tracker API Documentation</h1>
+    </header>
+    <main>
+        <p>Many users today struggle to keep track of their digital subscriptions. From streaming services like Netflix to productivity tools and online platforms, it’s easy to forget when renewals are due—leading to unexpected charges and account deductions. This is a common issue that causes confusion, frustration, and unnecessary financial drain.</p>
+        <p><strong>Subscription Tracker API</strong> is a RESTful API designed to solve that problem. It allows users to store and manage their subscription data, and automatically notifies them via email before the renewal date—specifically 7, 5, 2, and 1 day(s) in advance. With this system, users are reminded ahead of time and can take appropriate action, whether to renew or cancel—helping them stay in control of their finances and avoid surprise charges.</p>
+        <p>The API is built using <a href="https://expressjs.com/" target="_blank">Express.js</a> with <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a> for strong typing and enhanced developer experience. <a href="https://www.mongodb.com/" target="_blank">MongoDB</a> is used as the primary database, managed via <a href="https://mongoosejs.com/" target="_blank">Mongoose</a> as the ODM. Authentication and account security are handled using <a href="https://jwt.io/" target="_blank">JWT (JSON Web Tokens)</a> and <a href="https://github.com/dcodeIO/bcrypt.js">bcrypt</a> to ensure secure access. For sending reminder emails, it utilizes [Nodemailer](https://nodemailer.com/), while <a href="https://upstash.com/" target="_blank">Upstash</a> take care of scheduled background jobs to trigger those reminders reliably. The API is protected by <a href="https://arcjet.com/" target="_blank">Arcjet</a>, which provides advanced endpoint security against XSS, SQL injection, brute-force attacks, bots, and other common web threats.</p>
+        <p>Below are the features of the API:</p>
+        <ul class="feature-list">
+            <li><strong>Subscription Management:</strong> Add and manage multiple subscription accounts with details such as name, cost, billing cycle, and next renewal date.</li>
+            <li><strong>Automated Email Reminders:</strong> Receive timely email alerts 7, 5, 2, and 1 day(s) before a subscription renews.</li>
+            <li><strong>Secure Authentication:</strong> Protected endpoints with JWT and hashed passwords via bcrypt.</li>
+            <li><strong>Real-Time Protection:</strong> Built-in Arcjet middleware to guard against common web attacks and abusive traffic.</li>
+            <li><strong>Serverless Workflow Integration:</strong> Uses Upstash QStash and Workflows to trigger email reminders without maintaining a cron server.</li>
+        </ul>
+        <p>Feel free to integrate this API into your own applications, or extend it for mobile/web-based subscription management tools.</p>
+        <div class="button-group">
+            <a href="/Subscription Tracker.postman_collection.json" download="Subscription Tracker.postman_collection.json" class="button">Download Postman Collection</a>
+            <a href="https://github.com/fauzancodes/subscription-tracker" class="button" target="_blank">Go to GitHub Repository</a>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 Subscription Tracker API Project. All rights reserved. By <a href="https://fauzancodes.id/" target="_blank">fauzancodes</a></p>
+    </footer>
+</body>
+</html>
