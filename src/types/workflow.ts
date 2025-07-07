@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import Subscription from "../models/subscription.model.ts";
+import Subscription from "../models/subscription.model.js";
 
 export interface SendReminderEmailParams {
   to: string;

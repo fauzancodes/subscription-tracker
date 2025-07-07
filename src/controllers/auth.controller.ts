@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import User from '../models/user.model.ts";
 import bcrypt from "bcryptjs";
 import jwt, { SignOptions } from "jsonwebtoken";
-import { JWT_SECRET, JWT_EXPIRY } from '../config/env.ts";
-import { generateError } from "../utilities/common.ts";
 import { NextFunction, Request, Response } from "express";
-import { SignInRequest, SignUpRequest } from "../types/auth.ts";
+import User from "../models/user.model.js";
+import { JWT_SECRET, JWT_EXPIRY } from "../config/env.js";
+import { generateError } from "../utilities/common.js";
+import { SignInRequest, SignUpRequest } from "../types/auth.js";
 
 export const signUp = async (req: Request<{}, {}, SignUpRequest>, res: Response, next: NextFunction) => {
   const databaseSession = await mongoose.startSession();

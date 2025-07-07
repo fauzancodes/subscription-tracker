@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../models/user.model.ts";
-import { UserRequest } from "../types/user.ts";
-import { generateError } from "../utilities/common.ts";
+import User from "../models/user.model.js";
+import { UserRequest } from "../types/user.js";
+import { generateError } from "../utilities/common.js";
 import bcrypt from "bcryptjs";
 
 export const getUsers = async (_req: Request, res: Response, next: NextFunction) => {

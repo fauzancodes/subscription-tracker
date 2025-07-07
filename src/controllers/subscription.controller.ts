@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { SERVER_URL } from "../config/env.ts";
-import { workflowClient } from "../config/upstash.ts";
-import Subscription from "../models/subscription.model.ts";
-import { generateError } from "../utilities/common.ts";
-import { SubscriptionRequest } from "../types/subscription.ts";
+import { SERVER_URL } from "../config/env.js";
+import { workflowClient } from "../config/upstash.js";
+import Subscription from "../models/subscription.model.js";
+import { generateError } from "../utilities/common.js";
+import { SubscriptionRequest } from "../types/subscription.js";
 
 export const createSubscription = async (req: Request<{}, {}, SubscriptionRequest>, res: Response, next: NextFunction) => {
   try {

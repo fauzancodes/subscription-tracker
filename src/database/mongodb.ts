@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { DB_URI, NODE_ENV } from "../config/env.ts";
+import { DB_URI, NODE_ENV } from "../config/env.js";
 
 if (!DB_URI) {
   throw new Error('Please define the DB_URI inside the .env file')

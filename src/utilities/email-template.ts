@@ -1,4 +1,4 @@
-import { EmailTemplate } from "../types/email.ts";
+import { EmailTemplate } from "../types/email.js";
 
 export const generateEmailTemplate = ({
   userName,

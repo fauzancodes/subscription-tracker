@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
-import { emailTemplates } from "./email-template.ts";
-import { EMAIL_USER } from "../config/env.ts";
-import transporter from "../config/nodemailer.ts";
-import { EmailReminderRequest, EmailTemplate } from "../types/email.ts";
+import { emailTemplates } from "./email-template.js";
+import { EMAIL_USER } from "../config/env.js";
+import transporter from "../config/nodemailer.js";
+import { EmailReminderRequest, EmailTemplate } from "../types/email.js";
 
 export const sendReminderEmail = async ({ to, type, subscription }: EmailReminderRequest) => {
   if (!to || !type) {

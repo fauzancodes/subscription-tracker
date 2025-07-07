@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authorize, checkIsAdmin } from "../middlewares/auth.middleware.ts";
+import { authorize, checkIsAdmin } from "../middlewares/auth.middleware.js";
 import { createSubscription, deleteSubscription, getSubscription, getSubscriptions, getUserSubscription, updateSubscription } from "../controllers/subscription.controller.js";
 
 const subscriptionRouter = Router();
