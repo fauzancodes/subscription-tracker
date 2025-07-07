@@ -1,13 +1,13 @@
 import express from 'express';
-import { PORT } from './config/env.js';
-import authRouter from './routes/auth.route.js';
-import userRouter from './routes/user.route.js';
-import subscriptionRouter from './routes/subscription.route.js';
-import connectToDatabase from './database/mongodb.js';
-import errorMiddleware from './middlewares/error.middleware.js';
+import { PORT } from './config/env.ts';
+import authRouter from './routes/auth.route.ts';
+import userRouter from './routes/user.route.ts';
+import subscriptionRouter from './routes/subscription.route.ts';
+import connectToDatabase from './database/mongodb.ts';
+import errorMiddleware from './middlewares/error.middleware.ts';
 import cookieParser from 'cookie-parser';
-import arcjetMiddleware from './middlewares/arcjet.middleware.js';
-import workflowRouter from './routes/workflow.route.js';
+import arcjetMiddleware from './middlewares/arcjet.middleware.ts';
+import workflowRouter from './routes/workflow.route.ts';
 
 const app = express();
 

@@ -1,13 +1,15 @@
-import { SERVER_URL } from "../config/env.js";
-import { workflowClient } from "../config/upstash.js";
-import Subscription from "../models/subscription.model.js";
-import { generateError } from "../utilities/common.js";
+import { NextFunction, Request, Response } from "express";
+import { SERVER_URL } from "../config/env.ts";
+import { workflowClient } from "../config/upstash.ts";
+import Subscription from "../models/subscription.model.ts";
+import { generateError } from "../utilities/common.ts";
+import { SubscriptionRequest } from "../types/subscription.ts";
 
-export const createSubscription = async (req, res, next) => {
+export const createSubscription = async (req: Request<{}, {}, SubscriptionRequest>, res: Response, next: NextFunction) => {
   try {
     const subscription = await Subscription.create({
       ...req.body,
-      user: req.user._id,
+      user: req.user?.id,
     })
 
     const { workflowRunId } = await workflowClient.trigger({
@@ -34,9 +36,9 @@ export const createSubscription = async (req, res, next) => {
   }
 }
 
-export const getUserSubscription = async (req, res, next) => {
+export const getUserSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const subscriptions = await Subscription.find({ user: req.user.id });
+    const subscriptions = await Subscription.find({ user: req.user?.id });
 
     res.status(200).json({
       success: true,
@@ -48,7 +50,7 @@ export const getUserSubscription = async (req, res, next) => {
   }
 }
 
-export const getSubscriptions = async (req, res, next) => {
+export const getSubscriptions = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const subscriptions = await Subscription.find();
 
@@ -62,7 +64,7 @@ export const getSubscriptions = async (req, res, next) => {
   }
 }
 
-export const getSubscription = async (req, res, next) => {
+export const getSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const subscription = await Subscription.findById(req.params.id);
     if (!subscription) {
@@ -70,7 +72,7 @@ export const getSubscription = async (req, res, next) => {
       throw error;
     }
 
-    if (!req.user.isAdmin && subscription.user != req.user.id) {
+    if (!req.user?.isAdmin && subscription.user.toString() != req.user?.id) {
       const error = generateError("Subscription not found", 404);
       throw error;
     }
@@ -85,7 +87,7 @@ export const getSubscription = async (req, res, next) => {
   }
 }
 
-export const deleteSubscription = async (req, res, next) => {
+export const deleteSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const subscription = await Subscription.findById(req.params.id);
     if (!subscription) {
@@ -93,7 +95,7 @@ export const deleteSubscription = async (req, res, next) => {
       throw error;
     }
 
-    if (!req.user.isAdmin && subscription.user != req.user.id) {
+    if (!req.user?.isAdmin && subscription.user.toString() != req.user?.id) {
       const error = generateError("Subscription not found", 404);
       throw error;
     }
@@ -109,7 +111,7 @@ export const deleteSubscription = async (req, res, next) => {
   }
 }
 
-export const updateSubscription = async (req, res, next) => {
+export const updateSubscription = async (req: Request<{ id: string }, {}, SubscriptionRequest>, res: Response, next: NextFunction) => {
   try {
     const subscription = await Subscription.findById(req.params.id);
     if (!subscription) {
@@ -117,7 +119,7 @@ export const updateSubscription = async (req, res, next) => {
       throw error;
     }
 
-    if (!req.user.isAdmin && subscription.user != req.user.id) {
+    if (!req.user?.isAdmin && subscription.user.toString() != req.user?.id) {
       const error = generateError("Subscription not found", 404);
       throw error;
     }

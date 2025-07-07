@@ -1,8 +1,10 @@
-import User from "../models/user.model.js";
-import { generateError } from "../utilities/common.js";
+import { NextFunction, Request, Response } from "express";
+import User from "../models/user.model.ts";
+import { UserRequest } from "../types/user.ts";
+import { generateError } from "../utilities/common.ts";
 import bcrypt from "bcryptjs";
 
-export const getUsers = async (req, res, next) => {
+export const getUsers = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User.find();
 
@@ -16,14 +18,21 @@ export const getUsers = async (req, res, next) => {
   }
 }
 
-export const getUser = async (req, res, next) => {
+export const getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let user = req.user
-    if (req.user.isAdmin) {
-      user = await User.findById(req.params.id).select("-password");
-      if (!user) {
+    if (req.user?.isAdmin) {
+      const userData = await User.findById(req.params.id).select("-password");
+      if (!userData) {
         const error = generateError("User not found", 404);
         throw error;
+      }
+
+      user = {
+        id: userData._id.toString(),
+        name: userData.name,
+        email: userData.email,
+        isAdmin: userData.isAdmin || false
       }
     }
 
@@ -37,8 +46,10 @@ export const getUser = async (req, res, next) => {
   }
 }
 
-export const createUser = async (req, res, next) => {
-  req.body.password = await bcrypt.hash(req.body.password, 12);
+export const createUser = async (req: Request<{}, {}, UserRequest>, res: Response, next: NextFunction) => {
+  if (req.body.password) {
+    req.body.password = await bcrypt.hash(req.body.password, 12);
+  }
   
   try {
     const user = await User.create({
@@ -55,10 +66,10 @@ export const createUser = async (req, res, next) => {
   }
 }
 
-export const deleteUser = async (req, res, next) => {
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let userId = req.user.id
-    if (req.user.isAdmin) {
+    let userId = req.user?.id
+    if (req.user?.isAdmin) {
       userId = req.params.id
     }
 
@@ -79,10 +90,10 @@ export const deleteUser = async (req, res, next) => {
   }
 }
 
-export const updateUser = async (req, res, next) => {
+export const updateUser = async (req: Request<{ id: string }, {}, UserRequest>, res: Response, next: NextFunction) => {
   try {
-    let userId = req.user.id
-    if (req.user.isAdmin) {
+    let userId = req.user?.id
+    if (req.user?.isAdmin) {
       userId = req.params.id
     }
 
@@ -101,7 +112,7 @@ export const updateUser = async (req, res, next) => {
     if (req.body.password) {
       user.password = await bcrypt.hash(req.body.password, 12);
     }
-    if (req.user.isAdmin) {
+    if (req.user?.isAdmin) {
       user.isAdmin = req.body.isAdmin
     }
 

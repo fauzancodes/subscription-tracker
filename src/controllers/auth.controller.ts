@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
-import User from '../models/user.model.js';
+import User from '../models/user.model.ts';
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET, JWT_EXPIRY } from '../config/env.js';
-import { generateError } from "../utilities/common.js";
+import jwt, { SignOptions } from "jsonwebtoken";
+import { JWT_SECRET, JWT_EXPIRY } from '../config/env.ts';
+import { generateError } from "../utilities/common.ts";
+import { NextFunction, Request, Response } from "express";
+import { SignInRequest, SignUpRequest } from "../types/auth.ts";
 
-export const signUp = async (req, res, next) => {
+export const signUp = async (req: Request<{}, {}, SignUpRequest>, res: Response, next: NextFunction) => {
   const databaseSession = await mongoose.startSession();
   databaseSession.startTransaction();
 
@@ -31,8 +33,8 @@ export const signUp = async (req, res, next) => {
 
     const token = jwt.sign(
       { userId: newUsers[0]._id },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRY }
+      JWT_SECRET as string,
+      { expiresIn: JWT_EXPIRY } as SignOptions
     );
 
     await databaseSession.commitTransaction();
@@ -53,7 +55,7 @@ export const signUp = async (req, res, next) => {
   }
 }
 
-export const signIn = async (req, res, next) => {
+export const signIn = async (req: Request<{}, {}, SignInRequest>, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
@@ -71,8 +73,8 @@ export const signIn = async (req, res, next) => {
 
     const token = jwt.sign(
       { userId: user._id },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRY }
+      JWT_SECRET as string,
+      { expiresIn: JWT_EXPIRY } as SignOptions
     );
 
     res.status(200).json({
@@ -88,6 +90,6 @@ export const signIn = async (req, res, next) => {
   }
 }
 
-export const signOut = async (req, res, next) => {
+export const signOut = async (req: Request, res: Response, next: NextFunction) => {
   
 }
