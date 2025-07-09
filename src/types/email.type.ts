@@ -1,4 +1,4 @@
-import { SubscriptionType } from "./workflow.js";
+import { SubscriptionType } from "./workflow.type.js";
 
 export interface EmailTemplate {
   userName?: string,

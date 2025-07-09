@@ -1,12 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/user.model.js";
-import { UserRequest } from "../types/user.js";
+import { UserRequest } from "../types/user.type.js";
 import { generateError } from "../utilities/common.js";
 import bcrypt from "bcryptjs";
+import { createUserService, deleteUserByIdService, getUserByIdService, getUsersService, updateUserByIdService } from "../service/user.service.js";
 
-export const getUsers = async (_req: Request, res: Response, next: NextFunction) => {
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await User.find();
+    let { search, name, email } = req.query
+
+    search = typeof search === "string" ? search : ""
+    name = typeof name === "string" ? name : ""
+    email = typeof email === "string" ? email : ""
+
+    const users = await getUsersService({search, name, email})
 
     res.status(200).json({
       success: true,
@@ -20,20 +27,15 @@ export const getUsers = async (_req: Request, res: Response, next: NextFunction)
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let user = req.user
+    let userId = req.user?.id
     if (req.user?.isAdmin) {
-      const userData = await User.findById(req.params.id).select("-password");
-      if (!userData) {
-        const error = generateError("User not found", 404);
-        throw error;
-      }
+      userId = req.params.id
+    }
 
-      user = {
-        id: userData._id.toString(),
-        name: userData.name,
-        email: userData.email,
-        isAdmin: userData.isAdmin || false
-      }
+    const user = await getUserByIdService(userId || "")
+    if (!user) {
+      const error = generateError("User not found", 404);
+      throw error;
     }
 
     res.status(200).json({
@@ -47,13 +49,12 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 }
 
 export const createUser = async (req: Request<{}, {}, UserRequest>, res: Response, next: NextFunction) => {
-  if (req.body.password) {
-    req.body.password = await bcrypt.hash(req.body.password, 12);
-  }
-  
   try {
-    const user = await User.create({
-      ...req.body,
+    const user = await createUserService({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      isAdmin: req.body.isAdmin,
     })
 
     res.status(201).json({
@@ -73,13 +74,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
       userId = req.params.id
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      const error = generateError("User not found", 404);
-      throw error;
-    }
-
-    await user.deleteOne();
+    await deleteUserByIdService(userId || "")
 
     res.status(200).json({
       success: true,
@@ -97,30 +92,14 @@ export const updateUser = async (req: Request<{ id: string }, {}, UserRequest>, 
       userId = req.params.id
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      const error = generateError("User not found", 404);
-      throw error;
-    }
-
-    if (req.body.name) {
-      user.name = req.body.name
-    }
-    if (req.body.email) {
-      user.email = req.body.email
-    }
-    if (req.body.password) {
-      user.password = await bcrypt.hash(req.body.password, 12);
-    }
-    if (req.user?.isAdmin) {
-      user.isAdmin = req.body.isAdmin
-    }
-
-    await user.save();
+    const user = await updateUserByIdService(userId || "", req.body, req.user?.isAdmin || false)
 
     res.status(200).json({
       success: true,
-      message: "Success to update user"
+      message: "Success to update user",
+      data: {
+        user
+      }
     })
   } catch (error) {
     next(error)

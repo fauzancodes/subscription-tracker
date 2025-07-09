@@ -1,56 +1,22 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import jwt, { SignOptions } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
-import User from "../models/user.model.js";
-import { JWT_SECRET, JWT_EXPIRY } from "../config/env.js";
-import { generateError } from "../utilities/common.js";
-import { SignInRequest, SignUpRequest } from "../types/auth.js";
+import { SignInRequest, SignUpRequest } from "../types/auth.type.js";
+import { signInService, signUpService } from "../service/auth.service.js";
 
 export const signUp = async (req: Request<{}, {}, SignUpRequest>, res: Response, next: NextFunction) => {
-  const databaseSession = await mongoose.startSession();
-  databaseSession.startTransaction();
-
   try {
     const { name, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email: email })
-    if (existingUser) {
-      const error = generateError("User already exists", 409);
-      throw error;
-    }
-    
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const newUsers = await User.create([
-      {
-        name,
-        email,
-        password: hashedPassword,
-        isAdmin: false
-      }
-    ], { databaseSession })
-
-    const token = jwt.sign(
-      { userId: newUsers[0]._id },
-      JWT_SECRET as string,
-      { expiresIn: JWT_EXPIRY } as SignOptions
-    );
-
-    await databaseSession.commitTransaction();
-    databaseSession.endSession();
+    const { user, token } = await signUpService({ name, email, password })
 
     res.status(201).json({
       success: true,
       message: "User created successfully",
       data: {
         token,
-        user: newUsers[0]
+        user
       }
     });
   } catch (error) {
-    await databaseSession.abortTransaction();
-    databaseSession.endSession();
     next(error);
   }
 }
@@ -59,23 +25,7 @@ export const signIn = async (req: Request<{}, {}, SignInRequest>, res: Response,
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email });
-    if (!user) {
-      const error = generateError("User not found", 404);
-      throw error;
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      const error = generateError("Invalid password", 401);
-      throw error;
-    }
-
-    const token = jwt.sign(
-      { userId: user._id },
-      JWT_SECRET as string,
-      { expiresIn: JWT_EXPIRY } as SignOptions
-    );
+    const { user, token } = await signInService({email, password})
 
     res.status(200).json({
       success: true,

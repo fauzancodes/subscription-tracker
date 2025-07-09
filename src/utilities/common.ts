@@ -4,3 +4,7 @@ export const generateError = (message: string, statusCode: number) => {
 
   return error;
 }
+
+export const escapeRegex = (str: string) => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

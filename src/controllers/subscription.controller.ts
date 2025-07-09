@@ -1,26 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { SERVER_URL } from "../config/env.js";
-import { workflowClient } from "../config/upstash.js";
 import Subscription from "../models/subscription.model.js";
 import { generateError } from "../utilities/common.js";
-import { SubscriptionRequest } from "../types/subscription.js";
+import { SubscriptionRequest } from "../types/subscription.type.js";
+import { createSubscriptionService, deleteSubscriptionByIdService, getSubscriptionByIdService, getSubscriptionsService, updateSubscriptionByIdService } from "../service/subscription.service.js";
+import { getSubscriptionsData } from "../repository/subscription.repository.js";
 
 export const createSubscription = async (req: Request<{}, {}, SubscriptionRequest>, res: Response, next: NextFunction) => {
   try {
-    const subscription = await Subscription.create({
+    const { subscription, workflowRunId} = await createSubscriptionService({
       ...req.body,
       user: req.user?.id,
-    })
-
-    const { workflowRunId } = await workflowClient.trigger({
-      url: `${SERVER_URL}/api/v1/workflows/subscription/reminder`,
-      body: {
-        subscriptionId: subscription.id,
-      },
-      headers: {
-        "content-type": "application/json",
-      },
-      retries: 0,
     })
 
     res.status(201).json({
@@ -38,7 +27,7 @@ export const createSubscription = async (req: Request<{}, {}, SubscriptionReques
 
 export const getUserSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const subscriptions = await Subscription.find({ user: req.user?.id });
+    const subscriptions = await getSubscriptionsData({ userId: req.user?.id });
 
     res.status(200).json({
       success: true,
@@ -50,9 +39,55 @@ export const getUserSubscription = async (req: Request, res: Response, next: Nex
   }
 }
 
-export const getSubscriptions = async (_req: Request, res: Response, next: NextFunction) => {
+export const getSubscriptions = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const subscriptions = await Subscription.find();
+    let {
+      search,
+      name,
+      currency,
+      frequency,
+      category,
+      status,
+      startDateFrom,
+      startDateTo,
+      renewalDateFrom,
+      renewalDateTo,
+      paymentMethod,
+      userId,
+    } = req.query
+
+    search = typeof search === "string" ? search : ""
+    name = typeof name === "string" ? name : ""
+    currency = typeof currency === "string" ? currency : ""
+    frequency = typeof frequency === "string" ? frequency : ""
+    category = typeof category === "string" ? category : ""
+    status = typeof status === "string" ? status : ""
+    startDateFrom = typeof startDateFrom === "string" ? startDateFrom : ""
+    startDateTo = typeof startDateTo === "string" ? startDateTo : ""
+    renewalDateFrom = typeof renewalDateFrom === "string" ? renewalDateFrom : ""
+    renewalDateTo = typeof renewalDateTo === "string" ? renewalDateTo : ""
+    paymentMethod = typeof paymentMethod === "string" ? paymentMethod : ""
+    userId = typeof userId === "string" ? userId : ""
+
+    const startDateFromDate = new Date(startDateFrom)
+    const startDateToDate = new Date(startDateTo)
+    const renewalDateFromDate = new Date(renewalDateFrom)
+    const renewalDateToDate = new Date(renewalDateTo)
+
+    const subscriptions = getSubscriptionsService({
+      search,
+      name,
+      currency,
+      frequency,
+      category,
+      status,
+      startDateFrom: startDateFromDate,
+      startDateTo: startDateToDate,
+      renewalDateFrom: renewalDateFromDate,
+      renewalDateTo: renewalDateToDate,
+      paymentMethod,
+      userId,
+    });
 
     res.status(200).json({
       success: true,
@@ -66,13 +101,8 @@ export const getSubscriptions = async (_req: Request, res: Response, next: NextF
 
 export const getSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const subscription = await Subscription.findById(req.params.id);
+    const subscription = await getSubscriptionByIdService(req.params.id, req.user?.id || "", req.user?.isAdmin || false);
     if (!subscription) {
-      const error = generateError("Subscription not found", 404);
-      throw error;
-    }
-
-    if (!req.user?.isAdmin && subscription.user.toString() != req.user?.id) {
       const error = generateError("Subscription not found", 404);
       throw error;
     }
@@ -89,18 +119,7 @@ export const getSubscription = async (req: Request, res: Response, next: NextFun
 
 export const deleteSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const subscription = await Subscription.findById(req.params.id);
-    if (!subscription) {
-      const error = generateError("Subscription not found", 404);
-      throw error;
-    }
-
-    if (!req.user?.isAdmin && subscription.user.toString() != req.user?.id) {
-      const error = generateError("Subscription not found", 404);
-      throw error;
-    }
-
-    await Subscription.deleteOne();
+    await deleteSubscriptionByIdService(req.params.id, req.user?.id || "", req.user?.isAdmin || false)
 
     res.status(200).json({
       success: true,
@@ -113,48 +132,14 @@ export const deleteSubscription = async (req: Request, res: Response, next: Next
 
 export const updateSubscription = async (req: Request<{ id: string }, {}, SubscriptionRequest>, res: Response, next: NextFunction) => {
   try {
-    const subscription = await Subscription.findById(req.params.id);
-    if (!subscription) {
-      const error = generateError("Subscription not found", 404);
-      throw error;
-    }
-
-    if (!req.user?.isAdmin && subscription.user.toString() != req.user?.id) {
-      const error = generateError("Subscription not found", 404);
-      throw error;
-    }
-
-    if (req.body.name) {
-      subscription.name = req.body.name
-    }
-    if (req.body.price) {
-      subscription.price = req.body.price
-    }
-    if (req.body.currency) {
-      subscription.currency = req.body.currency
-    }
-    if (req.body.frequency) {
-      subscription.frequency = req.body.frequency
-    }
-    if (req.body.category) {
-      subscription.category = req.body.category
-    }
-    if (req.body.paymentMethod) {
-      subscription.paymentMethod = req.body.paymentMethod
-    }
-    if (req.body.status) {
-      subscription.status = req.body.status
-    }
-    if (req.body.startDate) {
-      subscription.startDate = req.body.startDate
-    }
-    if (req.body.renewalDate) {
-      subscription.renewalDate = req.body.renewalDate
-    }
+    const subscription = await updateSubscriptionByIdService(req.params.id, req.user?.id || "", req.body, req.user?.isAdmin || false)
 
     res.status(200).json({
       success: true,
-      message: "Success to get subscription details"
+      message: "Success to get subscription details",
+      data: {
+        subscription
+      }
     })
   } catch (error) {
     next(error)

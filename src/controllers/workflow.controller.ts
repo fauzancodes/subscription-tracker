@@ -4,7 +4,7 @@ const { serve } = customRequire("@upstash/workflow/express");
 import dayjs, { Dayjs } from "dayjs";
 import Subscription from "../models/subscription.model.js";
 import { sendReminderEmail } from "../utilities/send-email.js";
-import { Context, SubscriptionType } from "../types/workflow.js";
+import { Context, SubscriptionType } from "../types/workflow.type.js";
 
 const REMINDERS = [7, 5, 2, 1];
 
