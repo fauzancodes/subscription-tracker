@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import Subscription from "../models/subscription.model.js";
 import { generateError } from "../utilities/common.js";
 import { SubscriptionRequest } from "../types/subscription.type.js";
 import { createSubscriptionService, deleteSubscriptionByIdService, getSubscriptionByIdService, getSubscriptionsService, updateSubscriptionByIdService } from "../service/subscription.service.js";

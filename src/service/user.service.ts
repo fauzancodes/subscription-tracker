@@ -1,6 +1,6 @@
-import { createUserData, getUserDataByEmail, getUserDataById, getUsersData } from "../repository/user.repository";
-import { UsersParams, UserRequest, UserResponse } from "../types/user.type";
-import { generateError } from "../utilities/common";
+import { createUserData, getUserDataByEmail, getUserDataById, getUsersData } from "../repository/user.repository.js";
+import { UsersParams, UserRequest, UserResponse } from "../types/user.type.js";
+import { generateError } from "../utilities/common.js";
 import bcrypt from "bcryptjs";
 
 export const getUsersService = async (params: UsersParams): Promise<UserResponse[]> => {

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import User from "../models/user.model"
-import { UsersParams, UserRequest, UserResponse } from "../types/user.type";
-import { escapeRegex } from "../utilities/common";
+import User from "../models/user.model.js"
+import { UsersParams, UserRequest } from "../types/user.type.js";
+import { escapeRegex } from "../utilities/common.js";
 
 export const getUserDataByEmail = async (email: string) => {
   return await User.findOne({ email: email });

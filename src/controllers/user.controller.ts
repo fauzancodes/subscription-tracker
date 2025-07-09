@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../models/user.model.js";
 import { UserRequest } from "../types/user.type.js";
 import { generateError } from "../utilities/common.js";
-import bcrypt from "bcryptjs";
 import { createUserService, deleteUserByIdService, getUserByIdService, getUsersService, updateUserByIdService } from "../service/user.service.js";
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {

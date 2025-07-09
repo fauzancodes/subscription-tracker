@@ -1,10 +1,10 @@
-import { createUserData, getUserDataByEmail } from "../repository/user.repository";
-import { generateError } from "../utilities/common";
-import { JWT_SECRET, JWT_EXPIRY } from "../config/env.js";
 import jwt, { SignOptions } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { UserResponse } from "../types/user.type";
-import { SignInRequest, SignUpRequest } from "../types/auth.type";
+import { createUserData, getUserDataByEmail } from "../repository/user.repository.js";
+import { generateError } from "../utilities/common.js";
+import { JWT_SECRET, JWT_EXPIRY } from "../config/env.js";
+import { UserResponse } from "../types/user.type.js";
+import { SignInRequest, SignUpRequest } from "../types/auth.type.js";
 
 export const signUpService = async ({ name, email, password }: SignUpRequest): Promise<{ user: UserResponse; token: string }> => {
   try {

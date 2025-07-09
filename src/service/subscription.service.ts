@@ -1,8 +1,8 @@
-import { SERVER_URL } from "../config/env";
-import { workflowClient } from "../config/upstash";
-import { createSubscriptionData, getSubscriptionDataById, getSubscriptionsData } from "../repository/subscription.repository";
-import { SubscriptionRequest, SubscriptionResponse, SubscriptionsParams } from "../types/subscription.type";
-import { generateError } from "../utilities/common";
+import { SERVER_URL } from "../config/env.js";
+import { workflowClient } from "../config/upstash.js";
+import { createSubscriptionData, getSubscriptionDataById, getSubscriptionsData } from "../repository/subscription.repository.js";
+import { SubscriptionRequest, SubscriptionResponse, SubscriptionsParams } from "../types/subscription.type.js";
+import { generateError } from "../utilities/common.js";
 
 export const createSubscriptionService = async (subscription: SubscriptionRequest): Promise<{ subscription: SubscriptionResponse, workflowRunId: string }> => {
   try {

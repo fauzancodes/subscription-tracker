@@ -1,6 +1,6 @@
-import Subscription from "../models/subscription.model"
-import { SubscriptionRequest, SubscriptionResponse, SubscriptionsParams } from "../types/subscription.type";
-import { escapeRegex } from "../utilities/common";
+import Subscription from "../models/subscription.model.js"
+import { SubscriptionRequest, SubscriptionsParams } from "../types/subscription.type.js";
+import { escapeRegex } from "../utilities/common.js";
 
 export const createSubscriptionData = async (subscription: SubscriptionRequest) => {
   try {
